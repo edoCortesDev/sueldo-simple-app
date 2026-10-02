@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F8FAFC">
+  <meta name="description" content="Calcula tu sueldo mensual, registra días trabajados y abonos, y obtiene una liquidación para imprimir.">
+  <title>Sueldo Simple</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <!-- Lucide icons, distributed locally under the ISC license. -->
+      <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M8 2v4m8-4v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="m9 16 2 2 4-4"/></symbol>
+      <symbol id="icon-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+      <symbol id="icon-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></symbol>
+      <symbol id="icon-erase" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3a2.4 2.4 0 0 1 0-3.4l9.6-9.6a2.4 2.4 0 0 1 3.4 0l5.6 5.6a2.4 2.4 0 0 1 0 3.4L13 21H7Zm15 0H7M5 11l9 9"/></symbol>
+      <symbol id="icon-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    </defs>
+  </svg>
+  <div id="salary-app">
+    <header class="app-header">
+      <a class="brand" href="index.html" aria-label="Sueldo Simple, inicio">
+        <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#icon-calendar"/></svg></span>
+        <span>Sueldo<span class="brand-light">Simple</span></span>
+      </a>
+      <span class="currency-tag">CLP <span>·</span> Chile</span>
+    </header>
+    <main class="workspace">
+      <div class="page-heading">
+        <div><p class="eyebrow">REGISTRO MENSUAL</p><h1>Tu sueldo, al día.</h1></div>
+        <div class="save-indicator"><span class="status-dot" aria-hidden="true"></span><span id="storage-status" role="status">Guardado en este dispositivo</span></div>
+      </div>
+      <p id="storage-warning" class="notice" role="status" hidden></p>
+      <section class="month-bar" aria-label="Periodo de cálculo">
+        <div class="month-navigation">
+          <button id="previous" class="icon-button" type="button" aria-label="Mes anterior" data-tooltip="Mes anterior"><svg class="icon" aria-hidden="true"><use href="#icon-left"/></svg></button>
+          <h2 id="month-label"></h2>
+          <button id="next" class="icon-button" type="button" aria-label="Mes siguiente" data-tooltip="Mes siguiente"><svg class="icon" aria-hidden="true"><use href="#icon-right"/></svg></button>
+        </div>
+        <div class="period-input"><label class="sr-only" for="month">Elegir mes</label><input id="month" type="month" min="1900-01" max="9999-12" required></div>
+      </section>
+      <div class="calculator-layout">
+        <div class="calendar-column">
+          <section class="amounts-section" aria-label="Montos del mes">
+            <div class="field">
+              <label for="base">Sueldo base mensual</label>
+              <div class="money-input"><span aria-hidden="true">$</span><input id="base" type="text" inputmode="numeric" autocomplete="off" maxlength="13" aria-describedby="base-hint base-error" required></div>
+              <span id="base-hint" class="field-hint">Pesos chilenos</span>
+              <span id="base-error" class="field-error" hidden></span>
+            </div>
+            <div class="field">
+              <label for="advance">Abono recibido</label>
+              <div class="money-input"><span aria-hidden="true">$</span><input id="advance" type="text" inputmode="numeric" autocomplete="off" maxlength="13" aria-describedby="advance-hint advance-error" required></div>
+              <span id="advance-hint" class="field-hint">Total pagado este mes</span>
+              <span id="advance-error" class="field-error" hidden></span>
+            </div>
+          </section>
+          <div class="daily-rate-band">
+            <div><span class="rate-title">Valor día normal</span><strong id="daily-rate">$0</strong></div>
+            <span id="weekday-count">Días hábiles este mes</span>
+          </div>
+          <section class="calendar-section" aria-label="Días trabajados">
+            <div class="section-heading"><h2>Días trabajados</h2><span id="selected-count">0 días seleccionados</span></div>
+            <div class="calendar-tools">
+              <button id="select-weekdays" type="button" class="text-button"><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>Marcar lun–vie</button>
+              <button id="clear" type="button" class="icon-button" aria-label="Quitar días seleccionados" data-tooltip="Quitar selección"><svg class="icon" aria-hidden="true"><use href="#icon-erase"/></svg></button>
+            </div>
+            <div class="weekday-headings" aria-hidden="true"><span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span><span>VIE</span><span>SÁB</span><span>DOM</span></div>
+            <div id="calendar" class="calendar" role="group" aria-label="Calendario de días trabajados"></div>
+            <div class="calendar-legend" aria-label="Tipos de jornada">
+              <span><i class="legend-dot normal" aria-hidden="true"></i>Normal</span>
+              <span><i class="legend-dot saturday" aria-hidden="true"></i>Sáb. <strong>$20.000</strong></span>
+              <span><i class="legend-dot sunday" aria-hidden="true"></i>Dom. <strong>$25.000</strong></span>
+            </div>
+          </section>
+        </div>
+        <aside class="summary-column" aria-label="Resumen mensual">
+          <section class="summary-section">
+            <div class="summary-heading"><h2>Resumen del mes</h2><svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></div>
+            <dl class="breakdown">
+              <div><dt><i class="legend-dot normal" aria-hidden="true"></i><span id="weekdays-label">Días normales (0)</span></dt><dd id="weekday-pay">$0</dd></div>
+              <div><dt><i class="legend-dot saturday" aria-hidden="true"></i><span id="saturdays-label">Sábados extra (0)</span></dt><dd id="saturday-pay">$0</dd></div>
+              <div><dt><i class="legend-dot sunday" aria-hidden="true"></i><span id="sundays-label">Domingos extra (0)</span></dt><dd id="sunday-pay">$0</dd></div>
+              <div class="total-row"><dt>Total ganado</dt><dd id="total">$0</dd></div>
+              <div class="advance-row"><dt>Abono recibido</dt><dd id="advance-total">$0</dd></div>
+            </dl>
+            <div id="balance-panel" class="balance-panel" data-status="settled">
+              <span id="balance-label">Saldo al día</span>
+              <strong id="balance">$0</strong>
+              <p id="balance-caption">Sin saldo pendiente en este mes.</p>
+            </div>
+            <p id="rounding-note" class="rounding-note" hidden></p>
+            <div class="field name-field"><label for="name">Nombre <span>(opcional)</span></label><input id="name" type="text" maxlength="120" autocomplete="name" placeholder="Nombre del trabajador/a"></div>
+            <button id="print" class="primary-button" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-print"/></svg>Liquidación PDF</button>
+          </section>
+          <p class="privacy-note"><svg class="icon" aria-hidden="true"><use href="#icon-lock"/></svg>Tu registro queda en este dispositivo.</p>
+        </aside>
+      </div>
+      <p id="live-summary" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+      <footer class="app-footer"><span>Sueldo Simple</span><span>Un mes a la vez.</span></footer>
+    </main>
+    <div class="mobile-summary" aria-label="Saldo del mes">
+      <div><span id="mobile-balance-label">Saldo al día</span><strong id="mobile-balance">$0</strong></div>
+      <button id="mobile-print" type="button" class="icon-button" aria-label="Liquidación PDF" data-tooltip="Liquidación PDF"><svg class="icon" aria-hidden="true"><use href="#icon-print"/></svg></button>
+    </div>
+    <noscript><p class="notice">Activa JavaScript para calcular tu sueldo.</p></noscript>
+  </div>
+  <article id="payslip" aria-label="Liquidación de sueldo"></article>
+  <p class="print-invalid-message">No se puede emitir la liquidación. Revisa los montos ingresados antes de imprimir.</p>
+</body>
+</html>

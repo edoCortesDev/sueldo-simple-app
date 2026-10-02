@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-01T00:02:37.244Z",
+  "browser": "154.0.8037.59",
+  "evidence": [
+    "AC01/AC02: file:// startup, default base, September calendar",
+    "AC03/AC04: pointer and keyboard selection, extra rates, advance",
+    "AC05: settled and negative balances retain the correct meaning",
+    "AC01/AC08: invalid money blocks button and browser printing",
+    "AC06: independent monthly values and selections survive reload",
+    "AC03: bulk weekday selection preserves extras; clear is confirmed",
+    "AC09: 320/390/768/1440 widths have no viewport overflow, including maximum amounts",
+    "AC09: desktop/mobile screenshots captured and reduced motion respected",
+    "AC08: print command and statement metadata, selected dates, amounts and A4 PDF",
+    "AC10: all domain tests also pass directly in tests.html",
+    "AC07: corrupt saved month is preserved while calculations remain usable",
+    "AC07: unavailable localStorage shows feedback without blocking calculation or print",
+    "No browser runtime errors"
+  ],
+  "errors": []
+}
